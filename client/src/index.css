@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(210, 40%, 98%);
+  --foreground: hsl(222, 45%, 11%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(222, 45%, 11%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(222, 45%, 11%);
+  --primary: hsl(214, 84%, 56%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(215, 28%, 47%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --muted: hsl(215, 28%, 95%);
+  --muted-foreground: hsl(215, 16%, 47%);
+  --accent: hsl(215, 28%, 92%);
+  --accent-foreground: hsl(222, 45%, 11%);
+  --destructive: hsl(0, 84%, 56%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --border: hsl(215, 28%, 87%);
+  --input: hsl(215, 28%, 87%);
+  --ring: hsl(214, 84%, 56%);
+  --chart-1: hsl(214, 84%, 56%);
+  --chart-2: hsl(160, 60%, 45%);
+  --chart-3: hsl(30, 80%, 55%);
+  --chart-4: hsl(280, 60%, 50%);
+  --chart-5: hsl(340, 60%, 50%);
+  --sidebar: hsl(0, 0%, 100%);
+  --sidebar-foreground: hsl(222, 45%, 11%);
+  --sidebar-primary: hsl(214, 84%, 56%);
+  --sidebar-primary-foreground: hsl(0, 0%, 98%);
+  --sidebar-accent: hsl(215, 28%, 92%);
+  --sidebar-accent-foreground: hsl(222, 45%, 11%);
+  --sidebar-border: hsl(215, 28%, 87%);
+  --sidebar-ring: hsl(214, 84%, 56%);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: ui-serif, Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+  --radius: 0.5rem;
+  --shadow-2xs: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00);
+  --shadow-xs: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00);
+  --shadow-sm: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00), 0px 1px 2px -1px hsl(214, 84%, 56%, 0.00);
+  --shadow: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00), 0px 1px 2px -1px hsl(214, 84%, 56%, 0.00);
+  --shadow-md: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00), 0px 2px 4px -1px hsl(214, 84%, 56%, 0.00);
+  --shadow-lg: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00), 0px 4px 6px -1px hsl(214, 84%, 56%, 0.00);
+  --shadow-xl: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00), 0px 8px 10px -1px hsl(214, 84%, 56%, 0.00);
+  --shadow-2xl: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+}
+
+.dark {
+  --background: hsl(222, 45%, 11%);
+  --foreground: hsl(210, 40%, 98%);
+  --card: hsl(222, 45%, 15%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --popover: hsl(222, 45%, 15%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --primary: hsl(214, 84%, 56%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(215, 28%, 47%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --muted: hsl(222, 45%, 20%);
+  --muted-foreground: hsl(215, 16%, 65%);
+  --accent: hsl(222, 45%, 20%);
+  --accent-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(0, 84%, 56%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --border: hsl(222, 45%, 25%);
+  --input: hsl(222, 45%, 25%);
+  --ring: hsl(214, 84%, 56%);
+  --chart-1: hsl(214, 84%, 56%);
+  --chart-2: hsl(160, 60%, 45%);
+  --chart-3: hsl(30, 80%, 55%);
+  --chart-4: hsl(280, 60%, 50%);
+  --chart-5: hsl(340, 60%, 50%);
+  --sidebar: hsl(222, 45%, 15%);
+  --sidebar-foreground: hsl(210, 40%, 98%);
+  --sidebar-primary: hsl(214, 84%, 56%);
+  --sidebar-primary-foreground: hsl(0, 0%, 98%);
+  --sidebar-accent: hsl(222, 45%, 20%);
+  --sidebar-accent-foreground: hsl(210, 40%, 98%);
+  --sidebar-border: hsl(222, 45%, 25%);
+  --sidebar-ring: hsl(214, 84%, 56%);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: ui-serif, Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+  --radius: 0.5rem;
+  --shadow-2xs: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00);
+  --shadow-xs: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00);
+  --shadow-sm: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00), 0px 1px 2px -1px hsl(214, 84%, 56%, 0.00);
+  --shadow: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00), 0px 1px 2px -1px hsl(214, 84%, 56%, 0.00);
+  --shadow-md: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00), 0px 2px 4px -1px hsl(214, 84%, 56%, 0.00);
+  --shadow-lg: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00), 0px 4px 6px -1px hsl(214, 84%, 56%, 0.00);
+  --shadow-xl: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00), 0px 8px 10px -1px hsl(214, 84%, 56%, 0.00);
+  --shadow-2xl: 0px 2px 0px 0px hsl(214, 84%, 56%, 0.00);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 1; 
+  }
+  50% { 
+    opacity: 0.8; 
+  }
+}
