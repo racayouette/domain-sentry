@@ -15,9 +15,9 @@ export default function TopBar({ title, description, onAddClick, showAddButton =
   });
 
   return (
-    <header className="bg-card border-b border-border p-6 flex items-center justify-between">
+    <header className="bg-card border-b border-border px-6 py-5 flex items-center justify-between">
       <div>
-        <h2 className="text-2xl font-bold text-foreground" data-testid="page-title">{title}</h2>
+        <h2 className="text-xl font-bold text-foreground" data-testid="page-title">{title}</h2>
         <p className="text-muted-foreground" data-testid="page-description">{description}</p>
       </div>
       <div className="flex items-center space-x-4">
