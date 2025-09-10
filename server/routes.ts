@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupAuth, requireAuth } from "./auth";
 import { 
   insertRegistrarSchema, 
   insertDomainSchema, 
@@ -9,8 +10,10 @@ import {
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Registrar routes
-  app.get("/api/registrars", async (req, res) => {
+  // Setup authentication first
+  setupAuth(app);
+  // Registrar routes (protected)
+  app.get("/api/registrars", requireAuth, async (req, res) => {
     try {
       const registrars = await storage.getRegistrars();
       res.json(registrars);
@@ -19,7 +22,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/registrars/:id", async (req, res) => {
+  app.get("/api/registrars/:id", requireAuth, async (req, res) => {
     try {
       const registrar = await storage.getRegistrar(req.params.id);
       if (!registrar) {
@@ -31,7 +34,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/registrars", async (req, res) => {
+  app.post("/api/registrars", requireAuth, async (req, res) => {
     try {
       const data = insertRegistrarSchema.parse(req.body);
       const registrar = await storage.createRegistrar(data);
@@ -41,7 +44,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/registrars/:id", async (req, res) => {
+  app.patch("/api/registrars/:id", requireAuth, async (req, res) => {
     try {
       const data = insertRegistrarSchema.partial().parse(req.body);
       const registrar = await storage.updateRegistrar(req.params.id, data);
@@ -51,7 +54,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/registrars/:id", async (req, res) => {
+  app.delete("/api/registrars/:id", requireAuth, async (req, res) => {
     try {
       await storage.deleteRegistrar(req.params.id);
       res.status(204).send();
@@ -60,8 +63,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Domain routes
-  app.get("/api/domains", async (req, res) => {
+  // Domain routes (protected)
+  app.get("/api/domains", requireAuth, async (req, res) => {
     try {
       const domains = await storage.getDomains();
       res.json(domains);
@@ -70,7 +73,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/domains/:id", async (req, res) => {
+  app.get("/api/domains/:id", requireAuth, async (req, res) => {
     try {
       const domain = await storage.getDomain(req.params.id);
       if (!domain) {
@@ -82,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/domains", async (req, res) => {
+  app.post("/api/domains", requireAuth, async (req, res) => {
     try {
       const data = insertDomainSchema.parse(req.body);
       const domain = await storage.createDomain(data);
@@ -92,7 +95,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/domains/:id", async (req, res) => {
+  app.patch("/api/domains/:id", requireAuth, async (req, res) => {
     try {
       const data = insertDomainSchema.partial().parse(req.body);
       const domain = await storage.updateDomain(req.params.id, data);
@@ -102,7 +105,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/domains/:id/complete", async (req, res) => {
+  app.post("/api/domains/:id/complete", requireAuth, async (req, res) => {
     try {
       const domain = await storage.markDomainCompleted(req.params.id);
       res.json(domain);
@@ -111,7 +114,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/domains/:id", async (req, res) => {
+  app.delete("/api/domains/:id", requireAuth, async (req, res) => {
     try {
       await storage.deleteDomain(req.params.id);
       res.status(204).send();
@@ -120,8 +123,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // SSL Certificate routes
-  app.get("/api/ssl-certificates", async (req, res) => {
+  // SSL Certificate routes (protected)
+  app.get("/api/ssl-certificates", requireAuth, async (req, res) => {
     try {
       const sslCertificates = await storage.getSslCertificates();
       res.json(sslCertificates);
@@ -130,7 +133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/ssl-certificates/:id", async (req, res) => {
+  app.get("/api/ssl-certificates/:id", requireAuth, async (req, res) => {
     try {
       const sslCertificate = await storage.getSslCertificate(req.params.id);
       if (!sslCertificate) {
@@ -142,7 +145,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/ssl-certificates", async (req, res) => {
+  app.post("/api/ssl-certificates", requireAuth, async (req, res) => {
     try {
       const data = insertSslCertificateSchema.parse(req.body);
       const sslCertificate = await storage.createSslCertificate(data);
@@ -152,7 +155,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/ssl-certificates/:id", async (req, res) => {
+  app.patch("/api/ssl-certificates/:id", requireAuth, async (req, res) => {
     try {
       const data = insertSslCertificateSchema.partial().parse(req.body);
       const sslCertificate = await storage.updateSslCertificate(req.params.id, data);
@@ -162,7 +165,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/ssl-certificates/:id/complete", async (req, res) => {
+  app.post("/api/ssl-certificates/:id/complete", requireAuth, async (req, res) => {
     try {
       const sslCertificate = await storage.markSslCertificateCompleted(req.params.id);
       res.json(sslCertificate);
@@ -171,7 +174,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/ssl-certificates/:id", async (req, res) => {
+  app.delete("/api/ssl-certificates/:id", requireAuth, async (req, res) => {
     try {
       await storage.deleteSslCertificate(req.params.id);
       res.status(204).send();
@@ -180,8 +183,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Notification routes
-  app.get("/api/notifications", async (req, res) => {
+  // Notification routes (protected)
+  app.get("/api/notifications", requireAuth, async (req, res) => {
     try {
       const notifications = await storage.getNotifications();
       res.json(notifications);
@@ -190,7 +193,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/notifications/unread", async (req, res) => {
+  app.get("/api/notifications/unread", requireAuth, async (req, res) => {
     try {
       const notifications = await storage.getUnreadNotifications();
       res.json(notifications);
@@ -199,7 +202,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/notifications", async (req, res) => {
+  app.post("/api/notifications", requireAuth, async (req, res) => {
     try {
       const data = insertNotificationSchema.parse(req.body);
       const notification = await storage.createNotification(data);
@@ -209,7 +212,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/notifications/:id/read", async (req, res) => {
+  app.patch("/api/notifications/:id/read", requireAuth, async (req, res) => {
     try {
       await storage.markNotificationRead(req.params.id);
       res.status(204).send();
@@ -218,7 +221,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/notifications/:id", async (req, res) => {
+  app.delete("/api/notifications/:id", requireAuth, async (req, res) => {
     try {
       await storage.deleteNotification(req.params.id);
       res.status(204).send();
@@ -227,8 +230,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Dashboard stats
-  app.get("/api/dashboard/stats", async (req, res) => {
+  // Dashboard stats (protected)
+  app.get("/api/dashboard/stats", requireAuth, async (req, res) => {
     try {
       const stats = await storage.getDashboardStats();
       res.json(stats);
@@ -237,8 +240,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Export routes
-  app.get("/api/export/domains", async (req, res) => {
+  // Export routes (protected)
+  app.get("/api/export/domains", requireAuth, async (req, res) => {
     try {
       const { startDate, endDate } = req.query;
       
@@ -268,7 +271,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/export/ssl-certificates", async (req, res) => {
+  app.get("/api/export/ssl-certificates", requireAuth, async (req, res) => {
     try {
       const { startDate, endDate } = req.query;
       
