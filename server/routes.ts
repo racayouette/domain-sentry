@@ -87,7 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/domains", requireAuth, async (req, res) => {
     try {
-      const data = insertDomainSchema.parse(req.body);
+      const data = insertDomainSchema.parse({...req.body, expiryDate: new Date(req.body.expiryDate)});
       const domain = await storage.createDomain(data);
       res.status(201).json(domain);
     } catch (error) {

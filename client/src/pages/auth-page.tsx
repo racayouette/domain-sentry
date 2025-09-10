@@ -62,10 +62,10 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex">
+    <div className="min-h-screen bg-gradient-to-br  dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex">
       {/* Left Column - Hero Section */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 to-primary/70" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-blue-700 to-blue-600" />
         <div className="relative z-10 flex flex-col justify-center px-12 text-white">
           <div className="mb-8">
             <div className="flex items-center space-x-3 mb-6">
