@@ -1,7 +1,10 @@
 import { Link, useLocation } from "wouter";
-import { Globe, Shield, Building, Bell, Download, Settings, BarChart3 } from "lucide-react";
+import { Globe, Shield, Building, Bell, Download, Settings, BarChart3, LogOut, User } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: BarChart3 },
@@ -15,10 +18,15 @@ const navItems = [
 
 export default function Sidebar() {
   const [location] = useLocation();
+  const { user, logoutMutation } = useAuth();
   
-  const { data: unreadNotifications = [] } = useQuery({
+  const { data: unreadNotifications = [] } = useQuery<{ id: string }[]>({
     queryKey: ["/api/notifications/unread"],
   });
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
 
   return (
     <div className="w-64 bg-card border-r border-border flex flex-col">
@@ -65,15 +73,40 @@ export default function Sidebar() {
       </nav>
       
       <div className="p-4 border-t border-border">
-        <div className="flex items-center space-x-3 px-4 py-3">
-          <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
-            <span className="text-secondary-foreground text-sm font-medium">JA</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate">John Admin</p>
-            <p className="text-xs text-muted-foreground truncate">admin@company.com</p>
-          </div>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              className="w-full flex items-center space-x-3 px-4 py-3 h-auto justify-start"
+              data-testid="user-menu-trigger"
+            >
+              <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                <User size={16} className="text-secondary-foreground" />
+              </div>
+              <div className="flex-1 min-w-0 text-left">
+                <p className="text-sm font-medium text-foreground truncate">
+                  {user?.username || "User"}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">Domain Manager</p>
+              </div>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="top" align="start" className="w-56">
+            <DropdownMenuItem disabled>
+              <User className="mr-2 h-4 w-4" />
+              <span>{user?.username || "User"}</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              onClick={handleLogout}
+              className="text-destructive focus:text-destructive"
+              data-testid="logout-button"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
