@@ -27,11 +27,12 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Domains() {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingDomain, setEditingDomain] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: domains = [], isLoading } = useQuery({
+  const { data: domains = [], isLoading } = useQuery<any[]>({
     queryKey: ["/api/domains"],
   });
 
@@ -74,7 +75,12 @@ export default function Domains() {
     },
   });
 
-  const filteredDomains = domains.filter((domain: any) =>
+  const handleEditDomain = (domain: any) => {
+    setEditingDomain(domain);
+    setShowAddModal(true);
+  };
+
+  const filteredDomains = domains.filter((domain) =>
     domain.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     domain.registrar?.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -185,7 +191,10 @@ export default function Domains() {
                                 <CheckCircle size={16} className="mr-2" />
                                 Mark Complete
                               </DropdownMenuItem>
-                              <DropdownMenuItem data-testid={`edit-domain-${domain.id}`}>
+                              <DropdownMenuItem 
+                                onClick={() => handleEditDomain(domain)}
+                                data-testid={`edit-domain-${domain.id}`} 
+                                >  
                                 <Edit size={16} className="mr-2" />
                                 Edit
                               </DropdownMenuItem>
@@ -224,7 +233,11 @@ export default function Domains() {
 
       <AddDomainModal
         open={showAddModal}
-        onOpenChange={setShowAddModal}
+        onOpenChange={(open) => {
+          setShowAddModal(open);
+          if (!open) setEditingDomain(null); // Reset edit state when closed
+        }}
+        domain={editingDomain} // Pass domain prop
       />
     </div>
   );

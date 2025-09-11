@@ -24,13 +24,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatDateForInput } from "@/lib/date-utils";
+import { useEffect } from "react";
 
 interface AddSslModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  certificate?: any; 
 }
 
-export default function AddSslModal({ open, onOpenChange }: AddSslModalProps) {
+export default function AddSslModal({ open, onOpenChange, certificate }: AddSslModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -48,16 +50,54 @@ export default function AddSslModal({ open, onOpenChange }: AddSslModalProps) {
       autoRenewal: false,
       notes: "",
     },
+    values: certificate
+      ? {
+          domain: certificate.domain || "",
+          issuer: certificate.issuer || "",
+          expiryDate: certificate.expiryDate ? new Date(certificate.expiryDate) : new Date(),
+          renewalPeriodYears: certificate.renewalPeriodYears || 1,
+          autoRenewal: certificate.autoRenewal || false,
+          notes: certificate.notes || "",
+        }
+      : undefined,
   });
 
+    useEffect(() => {
+    if (open) {
+      form.reset(
+        certificate
+          ? {
+              domain: certificate.domain || "",
+              issuer: certificate.issuer || "",
+              expiryDate: certificate.expiryDate ? new Date(certificate.expiryDate) : new Date(),
+              renewalPeriodYears: certificate.renewalPeriodYears || 1,
+              autoRenewal: certificate.autoRenewal || false,
+              notes: certificate.notes || "",
+            }
+          : {
+              domain: "",
+              issuer: "",
+              expiryDate: new Date(),
+              renewalPeriodYears: 1,
+              autoRenewal: false,
+              notes: "",
+            }
+      );
+    }
+  }, [certificate, open]);
+
+
   const createMutation = useMutation({
-    mutationFn: (data: any) => apiRequest("POST", "/api/ssl-certificates", data),
+    mutationFn: (data: any) => 
+        certificate
+        ? apiRequest("PATCH", `/api/ssl-certificates/${certificate.id}`, data) // Edit
+        : apiRequest("POST", "/api/ssl-certificates", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/ssl-certificates"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       toast({
         title: "Success",
-        description: "SSL certificate added successfully",
+        description: certificate ? "SSL certificate updated successfully" : "SSL certificate added successfully",
       });
       form.reset();
       onOpenChange(false);
@@ -65,7 +105,7 @@ export default function AddSslModal({ open, onOpenChange }: AddSslModalProps) {
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to add SSL certificate",
+        description: certificate ? "Failed to update SSL certificate" : "Failed to add SSL certificate",
         variant: "destructive",
       });
     },
@@ -79,7 +119,9 @@ export default function AddSslModal({ open, onOpenChange }: AddSslModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add New SSL Certificate</DialogTitle>
+          <DialogTitle>
+            {certificate ? "Edit SSL Certificate" : "Add New SSL Certificate"}
+          </DialogTitle>
         </DialogHeader>
         
         <Form {...form}>
@@ -220,7 +262,13 @@ export default function AddSslModal({ open, onOpenChange }: AddSslModalProps) {
                 disabled={createMutation.isPending}
                 data-testid="ssl-submit-button"
               >
-                {createMutation.isPending ? "Adding..." : "Add SSL Certificate"}
+                {createMutation.isPending
+                  ? certificate
+                    ? "Saving..."
+                    : "Adding..."
+                  : certificate
+                    ? "Save Changes"
+                    : "Add SSL Certificate"}
               </Button>
             </div>
           </form>

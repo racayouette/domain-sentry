@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { insertDomainSchema } from "@shared/schema";
+import { insertDomainSchema, Registrar } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -29,13 +29,14 @@ import { formatDateForInput } from "@/lib/date-utils";
 interface AddDomainModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  domain?: any;
 }
 
-export default function AddDomainModal({ open, onOpenChange }: AddDomainModalProps) {
+export default function AddDomainModal({ open, onOpenChange, domain }: AddDomainModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: registrars = [] } = useQuery({
+  const { data: registrars = [] } = useQuery<Registrar[]>({
     queryKey: ["/api/registrars"],
   });
 
@@ -46,23 +47,62 @@ export default function AddDomainModal({ open, onOpenChange }: AddDomainModalPro
       ),
     })),
     defaultValues: {
-      name: "",
-      registrarId: "",
-      expiryDate: new Date(),
-      renewalPeriodYears: 1,
-      autoRenewal: false,
-      notes: "",
+      name: domain?.name || "",
+      registrarId: domain?.registrar?.id || "",
+      expiryDate: domain?.expiryDate ? new Date(domain.expiryDate) : new Date(),
+      renewalPeriodYears: domain?.renewalPeriodYears || 1,
+      autoRenewal: domain?.autoRenewal || false,
+      notes: domain?.notes || "",
     },
+    values: domain
+      ? {
+          name: domain.name || "",
+          registrarId: domain.registrar?.id || "",
+          expiryDate: domain.expiryDate ? new Date(domain.expiryDate) : new Date(),
+          renewalPeriodYears: domain.renewalPeriodYears || 1,
+          autoRenewal: domain.autoRenewal || false,
+          notes: domain.notes || "",
+        }
+      : undefined,
   });
 
+    // Reset form when domain changes or modal opens/closes
+  // This ensures prefill works when editing
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (open) {
+      form.reset(domain
+        ? {
+            name: domain.name || "",
+            registrarId: domain.registrar?.id || "",
+            expiryDate: domain.expiryDate ? new Date(domain.expiryDate) : new Date(),
+            renewalPeriodYears: domain.renewalPeriodYears || 1,
+            autoRenewal: domain.autoRenewal || false,
+            notes: domain.notes || "",
+          }
+        : {
+            name: "",
+            registrarId: "",
+            expiryDate: new Date(),
+            renewalPeriodYears: 1,
+            autoRenewal: false,
+            notes: "",
+          }
+      );
+    }
+  }, [domain, open]);
+
   const createMutation = useMutation({
-    mutationFn: (data: any) => apiRequest("POST", "/api/domains", data),
+    mutationFn: (data: any) => 
+        domain
+        ? apiRequest("PATCH", `/api/domains/${domain.id}`, data) // Edit
+        : apiRequest("POST", "/api/domains", data), // Add,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/domains"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       toast({
         title: "Success",
-        description: "Domain added successfully",
+        description: domain ? "Domain updated successfully" : "Domain added successfully",
       });
       form.reset();
       onOpenChange(false);
@@ -70,7 +110,7 @@ export default function AddDomainModal({ open, onOpenChange }: AddDomainModalPro
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to add domain",
+        description: domain ? "Failed to update domain" : "Failed to add domain",
         variant: "destructive",
       });
     },
@@ -84,7 +124,11 @@ export default function AddDomainModal({ open, onOpenChange }: AddDomainModalPro
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add New Domain</DialogTitle>
+          <DialogTitle>{
+            domain ?
+            "Edit Domain" :
+            "Add New Domain"
+          }</DialogTitle>
         </DialogHeader>
         
         <Form {...form}>
@@ -232,7 +276,13 @@ export default function AddDomainModal({ open, onOpenChange }: AddDomainModalPro
                 disabled={createMutation.isPending}
                 data-testid="submit-button"
               >
-                {createMutation.isPending ? "Adding..." : "Add Domain"}
+                {createMutation.isPending
+                  ? domain
+                    ? "Saving..."
+                    : "Adding..."
+                  : domain
+                    ? "Save Changes"
+                    : "Add Domain"}
               </Button>
             </div>
           </form>

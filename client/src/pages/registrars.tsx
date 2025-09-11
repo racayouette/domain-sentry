@@ -25,12 +25,18 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Registrars() {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingRegistrar, setEditingRegistrar] = useState<any>(null); 
   const [searchTerm, setSearchTerm] = useState("");
   const [visiblePasswords, setVisiblePasswords] = useState<Set<string>>(new Set());
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: registrars = [], isLoading } = useQuery({
+  const handleEditRegistrar = (registrar: any) => {
+    setEditingRegistrar(registrar);
+    setShowAddModal(true);
+  };
+
+  const { data: registrars = [], isLoading } = useQuery<any[]>({
     queryKey: ["/api/registrars"],
   });
 
@@ -52,7 +58,7 @@ export default function Registrars() {
     },
   });
 
-  const filteredRegistrars = registrars.filter((registrar: any) =>
+  const filteredRegistrars = registrars.filter((registrar) =>
     registrar.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -197,7 +203,10 @@ export default function Registrars() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem data-testid={`edit-registrar-${registrar.id}`}>
+                            <DropdownMenuItem 
+                              data-testid={`edit-registrar-${registrar.id}`}
+                              onClick={() => handleEditRegistrar(registrar)}
+                              >
                               <Edit size={16} className="mr-2" />
                               Edit
                             </DropdownMenuItem>
@@ -235,7 +244,11 @@ export default function Registrars() {
 
       <AddRegistrarModal
         open={showAddModal}
-        onOpenChange={setShowAddModal}
+        onOpenChange={(open) => {
+          setShowAddModal(open);
+          if (!open) setEditingRegistrar(null); // Reset edit state when closed
+        }}
+        registrar={editingRegistrar} // <-- Pass registrar prop
       />
     </div>
   );

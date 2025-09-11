@@ -10,7 +10,7 @@ interface TopBarProps {
 }
 
 export default function TopBar({ title, description, onAddClick, showAddButton = true }: TopBarProps) {
-  const { data: unreadNotifications = [] } = useQuery({
+  const { data: unreadNotifications = [] } = useQuery<Notification[]>({
     queryKey: ["/api/notifications/unread"],
   });
 

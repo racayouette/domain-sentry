@@ -97,10 +97,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/domains/:id", requireAuth, async (req, res) => {
     try {
-      const data = insertDomainSchema.partial().parse(req.body);
+      const data = insertDomainSchema.partial().parse({...req.body, expiryDate: new Date(req.body.expiryDate)});
       const domain = await storage.updateDomain(req.params.id, data);
       res.json(domain);
     } catch (error) {
+      console.log('err ', error)
       res.status(400).json({ message: "Invalid domain data" });
     }
   });
@@ -147,7 +148,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/ssl-certificates", requireAuth, async (req, res) => {
     try {
-      const data = insertSslCertificateSchema.parse(req.body);
+      const data = insertSslCertificateSchema.parse({...req.body, expiryDate: new Date(req.body.expiryDate)});
       const sslCertificate = await storage.createSslCertificate(data);
       res.status(201).json(sslCertificate);
     } catch (error) {
@@ -157,7 +158,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/ssl-certificates/:id", requireAuth, async (req, res) => {
     try {
-      const data = insertSslCertificateSchema.partial().parse(req.body);
+      const data = insertSslCertificateSchema.partial().parse({...req.body, expiryDate: new Date(req.body.expiryDate)});
       const sslCertificate = await storage.updateSslCertificate(req.params.id, data);
       res.json(sslCertificate);
     } catch (error) {

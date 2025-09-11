@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -27,9 +27,10 @@ import { Eye, EyeOff } from "lucide-react";
 interface AddRegistrarModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  registrar?: any; // <-- Accept registrar prop for editing
 }
 
-export default function AddRegistrarModal({ open, onOpenChange }: AddRegistrarModalProps) {
+export default function AddRegistrarModal({ open, onOpenChange, registrar }: AddRegistrarModalProps) {
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -44,16 +45,53 @@ export default function AddRegistrarModal({ open, onOpenChange }: AddRegistrarMo
       twoFactorMobile: "",
       notes: "",
     },
+    values: registrar
+      ? {
+          name: registrar.name || "",
+          loginUrl: registrar.loginUrl || "",
+          loginUsername: registrar.loginUsername || "",
+          loginPassword: registrar.loginPassword || "",
+          twoFactorMobile: registrar.twoFactorMobile || "",
+          notes: registrar.notes || "",
+        }
+      : undefined,
   });
 
+  useEffect(() => {
+    if (open) {
+      form.reset(
+        registrar
+          ? {
+              name: registrar.name || "",
+              loginUrl: registrar.loginUrl || "",
+              loginUsername: registrar.loginUsername || "",
+              loginPassword: registrar.loginPassword || "",
+              twoFactorMobile: registrar.twoFactorMobile || "",
+              notes: registrar.notes || "",
+            }
+          : {
+              name: "",
+              loginUrl: "",
+              loginUsername: "",
+              loginPassword: "",
+              twoFactorMobile: "",
+              notes: "",
+            }
+      );
+    }
+  }, [registrar, open]); // ensures prefill on edit
+
   const createMutation = useMutation({
-    mutationFn: (data: any) => apiRequest("POST", "/api/registrars", data),
+    mutationFn: (data: any) => 
+      registrar
+      ? apiRequest("PATCH", `/api/registrars/${registrar.id}`, data) // Edit
+      : apiRequest("POST", "/api/registrars", data), // Add
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/registrars"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       toast({
         title: "Success",
-        description: "Registrar added successfully",
+        description: registrar ? "Registrar updated successfully" : "Registrar added successfully",
       });
       form.reset();
       onOpenChange(false);
@@ -61,7 +99,7 @@ export default function AddRegistrarModal({ open, onOpenChange }: AddRegistrarMo
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to add registrar",
+        description: registrar ? "Failed to update registrar" : "Failed to add registrar",
         variant: "destructive",
       });
     },
@@ -75,7 +113,9 @@ export default function AddRegistrarModal({ open, onOpenChange }: AddRegistrarMo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add New Registrar</DialogTitle>
+          <DialogTitle>
+            {registrar ? "Edit Registrar" : "Add New Registrar"}
+          </DialogTitle>
         </DialogHeader>
         
         <Form {...form}>
@@ -220,7 +260,13 @@ export default function AddRegistrarModal({ open, onOpenChange }: AddRegistrarMo
                 disabled={createMutation.isPending}
                 data-testid="registrar-submit-button"
               >
-                {createMutation.isPending ? "Adding..." : "Add Registrar"}
+                {createMutation.isPending
+                  ? registrar
+                    ? "Saving..."
+                    : "Adding..."
+                  : registrar
+                    ? "Save Changes"
+                    : "Add Registrar"}
               </Button>
             </div>
           </form>

@@ -18,7 +18,7 @@ export default function Export() {
   const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
 
-  const { data: stats } = useQuery({
+  const { data: stats } = useQuery<any>({
     queryKey: ["/api/dashboard/stats"],
   });
 
@@ -122,7 +122,7 @@ export default function Export() {
   };
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col h-full">
       <TopBar 
         title="Export" 
         description="Export your domain and SSL certificate data"

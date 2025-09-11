@@ -19,19 +19,19 @@ export default function Dashboard() {
   const [showAddSslModal, setShowAddSslModal] = useState(false);
   const [addModalType, setAddModalType] = useState<"domain" | "ssl">("domain");
 
-  const { data: stats, isLoading: statsLoading } = useQuery({
+  const { data: stats, isLoading: statsLoading } = useQuery<any>({
     queryKey: ["/api/dashboard/stats"],
   });
 
-  const { data: domains = [], isLoading: domainsLoading } = useQuery({
+  const { data: domains = [], isLoading: domainsLoading } = useQuery<any[]>({
     queryKey: ["/api/domains"],
   });
 
-  const { data: sslCertificates = [], isLoading: sslLoading } = useQuery({
+  const { data: sslCertificates = [], isLoading: sslLoading } = useQuery<any[]>({
     queryKey: ["/api/ssl-certificates"],
   });
 
-  const { data: notifications = [], isLoading: notificationsLoading } = useQuery({
+  const { data: notifications = [], isLoading: notificationsLoading } = useQuery<any[]>({
     queryKey: ["/api/notifications/unread"],
   });
 
@@ -51,7 +51,7 @@ export default function Dashboard() {
 
   if (statsLoading) {
     return (
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col h-full">
         <TopBar title="Dashboard" description="Loading..." showAddButton={false} />
         <div className="flex-1 p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -68,14 +68,14 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col h-full min-h-0">
       <TopBar 
         title="Dashboard" 
         description="Overview of your domains and SSL certificates"
         onAddClick={handleAddClick}
       />
       
-      <main className="flex-1 overflow-y-auto p-6 space-y-6">
+      <main className="p-6 space-y-6 h-full overflow-y-auto min-h-0">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatsCard

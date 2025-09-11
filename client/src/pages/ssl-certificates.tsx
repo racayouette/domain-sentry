@@ -27,11 +27,12 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function SslCertificates() {
   const [showAddModal, setShowAddModal] = useState(false);
+   const [editingCertificate, setEditingCertificate] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: sslCertificates = [], isLoading } = useQuery({
+  const { data: sslCertificates = [], isLoading } = useQuery<any[]>({
     queryKey: ["/api/ssl-certificates"],
   });
 
@@ -74,10 +75,16 @@ export default function SslCertificates() {
     },
   });
 
-  const filteredCertificates = sslCertificates.filter((cert: any) =>
+  const filteredCertificates = sslCertificates.filter((cert) =>
     cert.domain.toLowerCase().includes(searchTerm.toLowerCase()) ||
     cert.issuer.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleEditCertificate = (cert: any) => {
+    setEditingCertificate(cert);
+    setShowAddModal(true);
+  };
+
 
   if (isLoading) {
     return (
@@ -185,7 +192,10 @@ export default function SslCertificates() {
                                 <CheckCircle size={16} className="mr-2" />
                                 Mark Complete
                               </DropdownMenuItem>
-                              <DropdownMenuItem data-testid={`edit-ssl-${cert.id}`}>
+                              <DropdownMenuItem 
+                                data-testid={`edit-ssl-${cert.id}`}
+                                onClick={() => handleEditCertificate(cert)} 
+                                >
                                 <Edit size={16} className="mr-2" />
                                 Edit
                               </DropdownMenuItem>
@@ -224,7 +234,11 @@ export default function SslCertificates() {
 
       <AddSslModal
         open={showAddModal}
-        onOpenChange={setShowAddModal}
+        onOpenChange={(open) => {
+          setShowAddModal(open);
+          if (!open) setEditingCertificate(null); // Reset edit state when closed
+        }}
+        certificate={editingCertificate}
       />
     </div>
   );
