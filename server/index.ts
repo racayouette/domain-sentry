@@ -1,6 +1,9 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import cron from "node-cron";
+import { storage } from "./storage";
+import { processExpiries, sendNotification } from "./utils";
 
 const app = express();
 app.use(express.json());
@@ -29,11 +32,28 @@ app.use((req, res, next) => {
         logLine = logLine.slice(0, 79) + "…";
       }
 
-      log(logLine);
+      // log(logLine);
     }
   });
 
   next();
+});
+
+// Cron job to check for expiring domains and SSL certificates
+cron.schedule("0 0 * * *", async () => {
+  console.log("Checking domains and SSL certificates for expiry reminders...");
+
+  try {
+    const [domains, certificates] = await Promise.all([
+      storage.getDomains(),
+      storage.getSslCertificates(),
+    ]);
+
+    await processExpiries(domains, "domain", "Domain");
+    await processExpiries(certificates, "ssl", "SSL certificate");
+  } catch (error: any) {
+    console.error("Error in cron job:", error.message);
+  }
 });
 
 (async () => {

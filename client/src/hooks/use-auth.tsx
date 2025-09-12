@@ -27,7 +27,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const {
     data: user,
     error,
-    isLoading,
+    isPending,
+    isFetching
   } = useQuery<SelectUser | null, Error>({
     queryKey: ["/api/user"],
     queryFn: async () => {
@@ -128,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user: user ?? null,
-        isLoading,
+        isLoading: isFetching,
         error,
         loginMutation,
         logoutMutation,

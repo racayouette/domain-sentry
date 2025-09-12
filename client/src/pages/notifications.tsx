@@ -12,7 +12,7 @@ export default function Notifications() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: notifications = [], isLoading } = useQuery({
+  const { data: notifications = [], isLoading } = useQuery<any[]>({
     queryKey: ["/api/notifications"],
   });
 
