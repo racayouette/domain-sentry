@@ -1,6 +1,9 @@
 import nodemailer from "nodemailer";
 import { storage } from "./storage";
 import { Domain, SslCertificate } from "@shared/schema";
+import "dotenv/config";
+
+
 export async function sendNotification(message: string) {
   if(!process.env.EMAIL || !process.env.EMAIL_PASS) {
     throw new Error("Email not configured, skipping notification...");
@@ -15,12 +18,12 @@ export async function sendNotification(message: string) {
 
   await transporter.sendMail({
     from: process.env.EMAIL,
-    to: "admin@example.com",
-    subject: "Domain Expiry Reminder",
+    to: "ajaypathak2527@gmail.com",
+    subject: "Domain/SSL Expiry Reminder",
     text: message
   });
 
-  console.log("Notification sent:", message);
+  console.log("Email Notification sent:", message);
 }
 
 
@@ -45,7 +48,6 @@ export async function processExpiries<T extends Domain | SslCertificate>(
   label: "Domain" | "SSL certificate"
 ) {
   const today = new Date();
-
   await Promise.all(
     items.map(async (item) => {
       const itemName = type === "domain" ? (item as Domain).name : (item as SslCertificate).domain;
@@ -65,9 +67,14 @@ export async function processExpiries<T extends Domain | SslCertificate>(
             isRead: false,
           });
 
-          sendNotification(
+          console.log(
             `Reminder: ${label} "${itemName}" will expire in ${days} day${days > 1 ? "s" : ""}.`
           );
+          // sendNotification(
+          //   `Reminder: ${label} "${itemName}" will expire in ${days} day${days > 1 ? "s" : ""}.`
+          // );
+        } else {
+          console.log("No notifications sent for", itemName);
         }
       }
     })

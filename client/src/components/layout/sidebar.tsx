@@ -13,7 +13,7 @@ const navItems = [
   { href: "/registrars", label: "Registrars", icon: Building },
   { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/export", label: "Export", icon: Download },
-  { href: "/settings", label: "Settings", icon: Settings },
+  // { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 export default function Sidebar() {

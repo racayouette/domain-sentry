@@ -73,14 +73,14 @@ export default function Notifications() {
   }
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col h-full">
       <TopBar 
         title="Notifications" 
         description="Manage your domain and SSL certificate expiration alerts"
         showAddButton={false}
       />
       
-      <main className="flex-1 overflow-y-auto p-6">
+      <main className="flex-1 overflow-y-auto p-6 ">
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
