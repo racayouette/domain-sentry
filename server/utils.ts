@@ -67,12 +67,9 @@ export async function processExpiries<T extends Domain | SslCertificate>(
             isRead: false,
           });
 
-          console.log(
+          sendNotification(
             `Reminder: ${label} "${itemName}" will expire in ${days} day${days > 1 ? "s" : ""}.`
           );
-          // sendNotification(
-          //   `Reminder: ${label} "${itemName}" will expire in ${days} day${days > 1 ? "s" : ""}.`
-          // );
         } else {
           console.log("No notifications sent for", itemName);
         }
