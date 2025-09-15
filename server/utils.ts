@@ -28,11 +28,10 @@ export async function sendNotification(message: string) {
 
 
 const notificationTypes: Record<number, string> = {
-  365: "1_year",
-  180: "6_months",
   30: "30_days",
-  7: "7_days",
-  1: "1_day",
+  14: "14_days",
+  5: "5_days",
+  2: "2_days",
 };
 
 type Item = {
